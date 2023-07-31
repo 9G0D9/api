@@ -1,6 +1,6 @@
 spacy
 pandas
-pdfminer
+pdfminer.six
 flask
 werkzeug
 gunicorn
