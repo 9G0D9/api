@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload PDF File</title>
+</head>
+<body>
+    <h1>Upload PDF File</h1>
+    <form action="/process_pdf" method="post" enctype="multipart/form-data">
+        <input type="file" name="pdf_file" accept=".pdf" required>
+        <br>
+        <input type="submit" value="Upload and Process">
+    </form>
+</body>
+</html>

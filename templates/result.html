@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NER Results</title>
+</head>
+<body>
+    <h1>Named Entity Recognition Results</h1>
+    <table border="1">
+        <tr>
+            <th>Label</th>
+            <th>Text</th>
+        </tr>
+        {% for label, texts in entities.items() %}
+        <tr>
+            <td>{{ label }}</td>
+            <td>{{ texts | join(", ") }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
