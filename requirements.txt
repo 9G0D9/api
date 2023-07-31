@@ -1,8 +1,6 @@
 spacy
-json
 pandas
 pdfminer
 pdfminer.high_level
-os
 flask
 werkzeug.utils
