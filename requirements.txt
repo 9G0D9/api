@@ -32,7 +32,6 @@ fastjsonschema==2.17.1
 filelock==3.12.2
 Flask==2.2.3
 fqdn==1.5.1
-fr-core-news-sm 
 fsspec==2023.6.0
 huggingface-hub==0.16.4
 idna==3.4
