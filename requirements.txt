@@ -1,6 +1,6 @@
-spacy
-pandas
-pdfminer.six
-flask
-werkzeug
+spacy==3.6.0
+pandas==2.0.3
+pdfminer.six=='20221105'
+flask==2.3.2
+werkzeug==2.3.6
 gunicorn
