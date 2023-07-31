@@ -1,6 +1,5 @@
 spacy
 pandas
 pdfminer
-pdfminer.high_level
 flask
-werkzeug.utils
+werkzeug
