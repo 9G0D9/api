@@ -32,7 +32,7 @@ fastjsonschema==2.17.1
 filelock==3.12.2
 Flask==2.2.3
 fqdn==1.5.1
-fr-core-news-sm @ file:///C:/Users/Mounir%20DHIEB/Downloads/fr_core_news_sm-3.6.0-py3-none-any.whl#sha256=88ba4254539a7efb51d5e0c5b6c4ea5b350542752b634088274c1b97d8c8b8ee
+fr-core-news-sm 
 fsspec==2023.6.0
 huggingface-hub==0.16.4
 idna==3.4
