@@ -11,7 +11,7 @@ from werkzeug.utils import secure_filename
 app = Flask(__name__)
 
 # Set the upload folder for the uploaded PDF files
-app.config['UPLOAD_FOLDER'] = os.path.abspath('uploads')
+app.config['UPLOAD_FOLDER'] = '/opt/render/project/src/uploads'
 
 output_dir='my_model_30'
 
