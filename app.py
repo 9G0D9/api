@@ -63,6 +63,7 @@ def process_pdf():
             filename = secure_filename(pdf_file.filename)
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             pdf_file.save(file_path)
+            nlp_model = spacy.load(output_dir)
             entities_dict = get_output(nlp_model, file_path)
             os.remove(file_path)
 
