@@ -13,7 +13,7 @@ app = Flask(__name__)
 # Set the upload folder for the uploaded PDF files
 app.config['UPLOAD_FOLDER'] = 'uploads'
 
-output_dir='my_model_35'
+output_dir='my_model_37'
 
 
 def make_dict(doc, nlp):
