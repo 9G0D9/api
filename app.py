@@ -77,16 +77,17 @@ def process_pdf():
             skills = entities_dict.get('Skills', set())
             tools = entities_dict.get('tools',set())
             matching_skills =[]
+            
             for i in keywords_list :
-                for j in skills :
-                    if i.lower()==j.lower() :
-                        matching_skills.append(i)
-                if tools=={None}:
-                    break
-                for k in tools :
-                
-                    if i.lower()==k.lower():
-                        matching_skills.append(i)
+                if skills!={None}:
+                    for j in skills :
+                        if i.lower()==j.lower() :
+                            matching_skills.append(i)
+                if tools!={None}:
+                    
+                    for k in tools :
+                        if i.lower()==k.lower():
+                            matching_skills.append(i)
 
             os.remove(file_path)
             
