@@ -81,7 +81,10 @@ def process_pdf():
                 for j in skills :
                     if i.lower()==j.lower() :
                         matching_skills.append(i)
+                if tools=={None}:
+                    break
                 for k in tools :
+                
                     if i.lower()==k.lower():
                         matching_skills.append(i)
 
