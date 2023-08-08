@@ -4,7 +4,7 @@
     <title>NER Results</title>
 </head>
 <body>
-    <h1>Named Entity Recognition Results</h1>
+    <h2>Resume Summary</h2>
     <table border="1">
         <tr>
             <th>Label</th>
@@ -17,5 +17,17 @@
         </tr>
         {% endfor %}
     </table>
+
+    {% if no_keywords_message %}
+        <h2>Matching Skills:</h2>
+        <p>{{ no_keywords_message }}</p>
+    {% else %}
+        <h2>Matching Skills:</h2>
+        <ul>
+            {% for skill in skills %}
+                <li>{{ skill }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
 </body>
 </html>
