@@ -4,3 +4,4 @@ pdfminer.six
 flask==2.3.2
 werkzeug==2.3.6
 gunicorn
+re==2.2.1
