@@ -76,7 +76,7 @@ def get_output(name_model,phone_address_model,link_github_model,main_model,skill
         
     entities_dict = {key: remove_newline(value) for key, value in data.items()}
     
-    return entities_dict
+    return entities_dict , text
 
 
 
@@ -102,7 +102,7 @@ def process_pdf():
             skills_model=spacy.load(skills_dir)
             main_model = spacy.load(main_dir)
 
-            entities_dict, text = get_output(name_model,phone_address_model,link_github_model,main_model, file_path)
+            entities_dict, text = get_output(name_model,phone_address_model,link_github_model,main_model,skills_model, file_path)
 
             # Extract keywords from the form input
             keywords = request.form.get('keywords')
