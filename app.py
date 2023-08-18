@@ -46,10 +46,12 @@ def get_output(file_path):
     skills_dict = make_entity_dict(models['skills'](text))
     main_dict = make_entity_dict(models['main'](text))
     
-    keys_to_check = ['name', 'phone_address', 'link_github', 'skills']
-    for key in keys_to_check:
-        if key in name_dict or key in phone_address_dict or key in link_github_dict or key in skills_dict:
-            main_dict.pop(key, None)
+    l=[]
+    for i in main_dict.keys():
+        if (i in name_dict.keys() or i in phone_address_dict.keys() or i in link_github_dict.keys() or i in skills_dict.keys()):
+            l.append(i)
+    for j in l:
+        del main_dict[j]
 
     data = {**name_dict, **phone_address_dict, **link_github_dict, **main_dict, **skills_dict}
     
