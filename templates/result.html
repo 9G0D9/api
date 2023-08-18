@@ -13,10 +13,15 @@
         {% for label, texts in entities.items() %}
         <tr>
             <td>{{ label }}</td>
-            <td>{{ texts | join(", ") }}</td>
+            <td>
+                {% for text in texts %}
+                    - {{ text }}<br>
+                {% endfor %}
+            </td>
         </tr>
         {% endfor %}
     </table>
+    
 
     {% if no_keywords_message %}
         <h2>Matching Skills:</h2>
