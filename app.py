@@ -1,8 +1,4 @@
 import spacy
-from spacy.training.example import Example
-import random
-import json
-import pandas as pd
 from pdfminer.high_level import extract_text
 import os
 from flask import Flask, render_template, request, jsonify
@@ -13,77 +9,61 @@ app = Flask(__name__)
 # Set the upload folder for the uploaded PDF files
 app.config['UPLOAD_FOLDER'] = 'uploads'
 
-name_dir='models//my_name_model'
-phone_address_dir='models//phone_model_2'
-link_github_dir='models//linkedin_github_model'
-skills_dir='models//s_model_2'
-main_dir='models//my_model_3'
+models_dir = 'models'  # Base directory for models
 
+# Load all models at startup
+def load_models():
+    models = {
+        'name': spacy.load(os.path.join(models_dir, 'my_name_model')),
+        'phone_address': spacy.load(os.path.join(models_dir, 'phone_model_2')),
+        'link_github': spacy.load(os.path.join(models_dir, 'linkedin_github_model')),
+        'skills': spacy.load(os.path.join(models_dir, 's_model_2')),
+        'main': spacy.load(os.path.join(models_dir, 'my_model_3'))
+    }
+    return models
 
-def make_dict(doc, nlp):
-    # Get all possible entity labels from the model
-    all_entity_labels = nlp.get_pipe("ner").labels
+models = load_models()
 
-    # Initialize a dictionary to store entities for each label as sets
-    entities_dict = {label: set() for label in all_entity_labels}
-
-    # Extract entities and group them by label
+def make_entity_dict(doc):
+    entities_dict = {}
     for ent in doc.ents:
-        entities_dict[ent.label_].add(ent.text)
-
-    # Convert empty sets to sets containing None for all labels
-    for label in entities_dict:
-        if not entities_dict[label]:
-            entities_dict[label].add(None)
-            
+        entities_dict.setdefault(ent.label_, set()).add(ent.text)
     return entities_dict
 
-
-
-def convert_pdf(name):
-    text=extract_text(name)
+def convert_pdf(file_path):
+    text = extract_text(file_path)
     return text
 
 def remove_newline(set_of_strings):
     return {string.replace('\n', ' ') for string in set_of_strings}
 
-def get_output(name_model,phone_address_model,link_github_model,main_model,skills_model, name):
-    text = convert_pdf(name)
-    name_dict = make_dict(name_model(text), name_model)
-    phone_address_dict = make_dict(phone_address_model(text), phone_address_model)
+def get_output(file_path):
+    text = convert_pdf(file_path)
+    name_dict = make_entity_dict(models['name'](text))
+    phone_address_dict = make_entity_dict(models['phone_address'](text))
     del phone_address_dict['Education']
-    link_github_dict = make_dict(link_github_model(text), link_github_model)
-    skills_dict=make_dict(skills_model(text),skills_model)
-    main_dict = make_dict(main_model(text), main_model)
-    l=[]
-    for i in main_dict.keys():
-        if (i in name_dict.keys() or i in phone_address_dict.keys() or i in link_github_dict.keys() or i in skills_dict.keys()):
-            l.append(i)
-    for j in l:
-        del main_dict[j]
-        
+    link_github_dict = make_entity_dict(models['link_github'](text))
+    skills_dict = make_entity_dict(models['skills'](text))
+    main_dict = make_entity_dict(models['main'](text))
     
+    keys_to_check = ['name', 'phone_address', 'link_github', 'skills']
+    for key in keys_to_check:
+        if key in name_dict or key in phone_address_dict or key in link_github_dict or key in skills_dict:
+            main_dict.pop(key, None)
+
+    data = {**name_dict, **phone_address_dict, **link_github_dict, **main_dict, **skills_dict}
     
-    data={**name_dict , **phone_address_dict , **link_github_dict ,**main_dict ,**skills_dict}
-    
-    l2=[]
-    for key in data.keys():
-        if data[key]=={None}:
-            l2.append(key)
-    
-    for key in l2 :
+    empty_keys = [key for key, value in data.items() if value == {None}]
+    for key in empty_keys:
         del data[key]
         
     entities_dict = {key: remove_newline(value) for key, value in data.items()}
     
-    return entities_dict , text
-
-
+    return entities_dict, text
 
 @app.route('/process_pdf', methods=['GET', 'POST'])
 def process_pdf():
     if request.method == 'POST':
-        # Check if the request contains a file with the key 'pdf_file'
         if 'pdf_file' not in request.files:
             return jsonify({"error": "No file provided in the request."}), 400
 
@@ -96,48 +76,28 @@ def process_pdf():
             filename = secure_filename(pdf_file.filename)
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             pdf_file.save(file_path)
-            name_model = spacy.load(name_dir)
-            phone_address_model = spacy.load(phone_address_dir)
-            link_github_model = spacy.load(link_github_dir)
-            skills_model=spacy.load(skills_dir)
-            main_model = spacy.load(main_dir)
 
-            entities_dict, text = get_output(name_model,phone_address_model,link_github_model,main_model,skills_model, file_path)
+            entities_dict, text = get_output(file_path)
 
-            # Extract keywords from the form input
             keywords = request.form.get('keywords')
             keywords_list = [keyword.strip() for keyword in keywords.split(',')]
-
-            # Search for keywords in the resume
-            
-            matching_skills =[]
-            
-            for i in keywords_list :
-                if i.lower() in text.lower() and i.lower() not in matching_skills :
-                    matching_skills.append(i)
+            matching_skills = [i for i in keywords_list if i.lower() in text.lower()]
 
             os.remove(file_path)
-            
+
             if not keywords:
                 no_keywords_message = "No keywords entered."
-                return render_template('result.html', no_keywords_message=no_keywords_message , entities=entities_dict)
+                return render_template('result.html', no_keywords_message=no_keywords_message, entities=entities_dict)
             else:
-                # Render the result.html template with the matching skills as context data
-                return render_template('result.html', skills=matching_skills , entities=entities_dict)
-
-            
-            
+                return render_template('result.html', skills=matching_skills, entities=entities_dict)
 
     # For GET requests, render the HTML form for manual file upload
     return render_template('upload.html')
-
-
-
 
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'pdf'}
 
 if __name__ == '__main__':
-    
-    app.run()
+    app.run(debug=True)
+
