@@ -16,6 +16,7 @@ app.config['UPLOAD_FOLDER'] = 'uploads'
 name_dir='models//my_name_model'
 phone_address_dir='models//phone_model_2'
 link_github_dir='models//linkedin_github_model'
+skills_dir='models//s_model_2'
 main_dir='models//my_model_3'
 
 
@@ -46,25 +47,25 @@ def convert_pdf(name):
 def remove_newline(set_of_strings):
     return {string.replace('\n', ' ') for string in set_of_strings}
 
-def get_output(name_model,phone_address_model,link_github_model,main_model, name):
+def get_output(name_model,phone_address_model,link_github_model,main_model,skills_model, name):
     text = convert_pdf(name)
     name_dict = make_dict(name_model(text), name_model)
     phone_address_dict = make_dict(phone_address_model(text), phone_address_model)
     del phone_address_dict['Education']
     link_github_dict = make_dict(link_github_model(text), link_github_model)
+    skills_dict=make_dict(skills_model(text),skills_model)
     main_dict = make_dict(main_model(text), main_model)
-    #remove alredy existing entities from main_dict
     l=[]
     for i in main_dict.keys():
-        if (i in name_dict.keys() or i in phone_address_dict.keys() or i in link_github_dict.keys()):
+        if (i in name_dict.keys() or i in phone_address_dict.keys() or i in link_github_dict.keys() or i in skills_dict.keys()):
             l.append(i)
     for j in l:
         del main_dict[j]
         
     
-    data={**name_dict , **phone_address_dict , **link_github_dict , **main_dict}
     
-    #remove empty values
+    data={**name_dict , **phone_address_dict , **link_github_dict ,**main_dict ,**skills_dict}
+    
     l2=[]
     for key in data.keys():
         if data[key]=={None}:
@@ -73,10 +74,9 @@ def get_output(name_model,phone_address_model,link_github_model,main_model, name
     for key in l2 :
         del data[key]
         
-    #remove '\n
     entities_dict = {key: remove_newline(value) for key, value in data.items()}
     
-    return entities_dict,text
+    return entities_dict
 
 
 
@@ -99,6 +99,7 @@ def process_pdf():
             name_model = spacy.load(name_dir)
             phone_address_model = spacy.load(phone_address_dir)
             link_github_model = spacy.load(link_github_dir)
+            skills_model=spacy.load(skills_dir)
             main_model = spacy.load(main_dir)
 
             entities_dict, text = get_output(name_model,phone_address_model,link_github_model,main_model, file_path)
